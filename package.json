@@ -1,6 +1,6 @@
 {
   "name": "signal-promise",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Simple wait/notify promise with optional max wait time",
   "main": "index.js",
   "dependencies": {},
