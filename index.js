@@ -4,30 +4,32 @@ module.exports = class Signal {
     this._reject = null
     this._promise = null
     this._bind = bind.bind(this)
-    this._clear = clear.bind(this)
+    this._onerror = clear.bind(this)
+    this._onsuccess = clear.bind(this, null)
     this._timers = new Set()
   }
 
   wait (max) {
     if (!this._promise) {
       this._promise = new Promise(this._bind)
-      this._promise.then(this._clear).catch(this._clear)
+      this._promise.then(this._onsuccess).catch(this._onerror)
     }
-    if (max) return this._sleep(this._promise, max)
+    if (max) return this._sleep(max)
     return this._promise
   }
 
-  _sleep (p, max) {
-    const s = new Promise(resolve => {
+  _sleep (max) {
+    const s = new Promise((resolve, reject) => {
       const done = () => {
-        this._timers.delete(id)
+        this._timers.delete(state)
         resolve(true)
       }
       const id = setTimeout(done, max)
-      this._timers.add(id)
+      const state = { id, resolve, reject }
+      this._timers.add(state)
     })
 
-    return Promise.race([s, p])
+    return s
   }
 
   notify (err) {
@@ -40,8 +42,12 @@ module.exports = class Signal {
   }
 }
 
-function clear () {
-  for (const id of this._timers) clearTimeout(id)
+function clear (err) {
+  for (const { id, resolve, reject } of this._timers) {
+    clearTimeout(id)
+    if (err) reject(err)
+    else resolve(true)
+  }
   this._timers.clear()
 }
 
