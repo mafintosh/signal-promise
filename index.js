@@ -19,7 +19,7 @@ module.exports = class Signal {
       id = setTimeout(resolve, max, true)
     })
 
-    p.then(clear)
+    p.then(clear).catch(clear)
     p.catch(clear)
 
     return Promise.race([s, p])
