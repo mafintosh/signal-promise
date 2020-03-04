@@ -13,7 +13,7 @@ const Signal = require('signal-promise')
 
 const input = new Signal()
 
-process.stdin.on('stdin', function () {
+process.stdin.on('data', function () {
   input.notify()
 })
 
