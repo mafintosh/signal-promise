@@ -13,13 +13,13 @@ const Signal = require('signal-promise')
 
 const input = new Signal()
 
-while (await input.wait()) {
-  console.log('someone typed!')
-}
-
 process.stdin.on('stdin', function () {
   input.notify()
 })
+
+while (await input.wait()) {
+  console.log('someone typed!')
+}
 ```
 
 ## API
